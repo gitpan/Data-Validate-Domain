@@ -1,0 +1,7 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/Data-Validate-Domain.t
+lib/Data/Validate/Domain.pm
+META.yml                                 Module meta-data (added by MakeMaker)
