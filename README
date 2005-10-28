@@ -42,7 +42,7 @@ FUNCTIONS
         *Returns*
             Returns a Data::Validate::Domain object
 
-    is_domain - does the value look like domain name?
+    is_domain - does the value look like a domain name?
           is_domain($value);
           or
           $obj->is_domain($value);
@@ -54,7 +54,7 @@ FUNCTIONS
         *Arguments*
 
             $value
-                The potential ip to test.
+                The potential domain to test.
 
         *Returns*
             Returns the untainted domain on success, undef on failure.
@@ -66,6 +66,11 @@ FUNCTIONS
 
             A dotted quad (such as 127.0.0.1) is not considered a domain and
             will return false. See Data::Validate::IP(3) for IP Validation.
+
+            Performs a lookup via Net::Domain::TLD to verify that the TLD is
+            valid for this domain.
+
+            Does not consider "domain.com." a valid format.
 
         *From RFC 952*
                A "name" (Net, Host, Gateway, or Domain name) is a text string up
@@ -96,6 +101,34 @@ FUNCTIONS
 
                 Host software MUST handle host names of up to 63 characters and
                 SHOULD handle host names of up to 255 characters.
+
+    is_hostname - does the value look like a hostname
+          is_hostname($value);
+          or
+          $obj->is_hostname($value);
+
+        *Description*
+            Returns the untainted hostname if the test value appears to be a
+            well-formed hostname.
+
+        *Arguments*
+
+            $value
+                The potential hostname to test.
+
+        *Returns*
+            Returns the untainted hostname on success, undef on failure.
+
+        *Notes, Exceptions, & Bugs*
+            The function does not make any attempt to check whether a
+            hostname actually exists. It only looks to see that the format
+            is appropriate.
+
+            Functions much like is_domain, except that it does not verify
+            whether or not a valid TLD has been supplied and allows for
+            there to only be a single component of the hostname (i.e www)
+
+            Hostnames might or might not have a valid TLD attached.
 
     is_domain_label - does the value look like a domain label?
           is_domain_label($value);

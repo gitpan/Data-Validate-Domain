@@ -3,6 +3,7 @@ package Data::Validate::Domain;
 use strict;
 use warnings;
 
+use Net::Domain::TLD;
 
 require Exporter;
 
@@ -23,10 +24,11 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw(
 	is_domain
+	is_hostname
 	is_domain_label
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 
@@ -109,7 +111,7 @@ sub new{
 
 =pod
 
-=item B<is_domain> - does the value look like domain name?
+=item B<is_domain> - does the value look like a domain name?
 
   is_domain($value);
   or
@@ -129,7 +131,7 @@ domain name.
 
 =item $value
 
-The potential ip to test.
+The potential domain to test.
 
 =back
 
@@ -144,6 +146,10 @@ actually exists. It only looks to see that the format is appropriate.
 
 A dotted quad (such as 127.0.0.1) is not considered a domain and will return false.
 See L<Data::Validate::IP(3)> for IP Validation.
+
+Performs a lookup via Net::Domain::TLD to verify that the TLD is valid for this domain.
+
+Does not consider "domain.com." a valid format.
 
 =item I<From RFC 952>
 
@@ -179,7 +185,6 @@ See L<Data::Validate::IP(3)> for IP Validation.
     SHOULD handle host names of up to 255 characters.
 
 
-
 =back
 
 =cut
@@ -194,7 +199,7 @@ sub is_domain {
 	return unless ($length > 0 && $length <= 255);
       
 	my @bits; 
-	foreach my $label (split('\.', $value)) {
+	foreach my $label (split('\.', $value, -1)) {
 		my $bit = is_domain_label($label);	
 		return unless defined $bit;
 		push(@bits, $bit);
@@ -208,9 +213,86 @@ sub is_domain {
 	#be considered a domain as it is valid.
 
 	#I don't have an RFC to back this up, but I believe it to be prudent
-	return unless $bits[$#bits] =~ /[a-zA-Z]$/;
+	my $tld = $bits[$#bits];
+	return unless $tld =~ /^[a-zA-Z]+$/;
+
+	#Verify domain has a valid TLD
+	return  unless Net::Domain::TLD->exists($tld);
         
         return join('.', @bits);
+}
+
+# -------------------------------------------------------------------------------
+
+=pod
+
+=item B<is_hostname> - does the value look like a hostname
+
+  is_hostname($value);
+  or
+  $obj->is_hostname($value);
+
+
+=over 4
+
+=item I<Description>
+
+Returns the untainted hostname if the test value appears to be a well-formed
+hostname. 
+
+=item I<Arguments>
+
+=over 4
+
+=item $value
+
+The potential hostname to test.
+
+=back
+
+=item I<Returns>
+
+Returns the untainted hostname on success, undef on failure.
+
+=item I<Notes, Exceptions, & Bugs>
+
+The function does not make any attempt to check whether a hostname  
+actually exists. It only looks to see that the format is appropriate.
+
+Functions much like is_domain, except that it does not verify whether or
+not a valid TLD has been supplied and allows for there to only
+be a single component of the hostname (i.e www)
+
+Hostnames might or might not have a valid TLD attached.
+
+=back
+
+=cut
+
+sub is_hostname {
+        my $self = shift if ref($_[0]); 
+        my $value = shift;
+
+        
+        return unless defined($value);
+
+	my $length = length($value);
+	return unless ($length > 0 && $length <= 255);
+
+#	return is_domain_label($value) unless $value =~ /\./;  #If just a simple hostname
+
+	#Anything past here has multiple bits in it
+	my @bits; 
+	foreach my $label (split('\.', $value, -1)) {
+		my $bit = is_domain_label($label);	
+		return unless defined $bit;
+		push(@bits, $bit);
+	} 
+
+	#We do not verify TLD for hostnames, as hostname.subhost is a valid hostname
+
+        return join('.', @bits);
+	
 }
 
 =pod

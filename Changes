@@ -1,5 +1,14 @@
 Revision history for Perl extension Data::Validate::Domain.
 
+0.02  Fri Oct  28 12:46:51 2005
+	- added is_hostname method (which is valid for either somehost or somehost.domain.com)
+	- modified is_domain to verify TLD of domain supplied (Uses Net::Domain::TLD)
+	- Fixed bug that allowed domain.com... to return the same results as domain.com 
+	- Will no longer consider domain.com. to be valid
+
+		Thanks to Smylers <smylers@donhost.co.uk> for the detailed bug 
+		report and suggested fixes.
+
 0.01  Fri Mar  4 10:56:34 2005
 	- original version; created by h2xs 1.23 with options
 		-AXn Data::Validate::Domain
