@@ -3,7 +3,7 @@ package Data::Validate::Domain;
 use strict;
 use warnings;
 
-use Net::Domain::TLD;
+use Net::Domain::TLD qw(tld_exists);
 
 require Exporter;
 
@@ -28,7 +28,7 @@ our @EXPORT = qw(
 	is_domain_label
 );
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 
@@ -217,7 +217,7 @@ sub is_domain {
 	return unless $tld =~ /^[a-zA-Z]+$/;
 
 	#Verify domain has a valid TLD
-	return  unless Net::Domain::TLD->exists($tld);
+	return  unless tld_exists($tld);
         
         return join('.', @bits);
 }

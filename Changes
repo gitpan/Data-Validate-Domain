@@ -1,5 +1,9 @@
 Revision history for Perl extension Data::Validate::Domain.
 
+0.03  Thu Nov  03 07:47:21 2005
+	- Updated to support new procedural version of Net::Domain::TLD
+		- Thanks to Ricardo Signes <rjbs@cpan.org> for letting me know about his new interface
+
 0.02  Fri Oct  28 12:46:51 2005
 	- added is_hostname method (which is valid for either somehost or somehost.domain.com)
 	- modified is_domain to verify TLD of domain supplied (Uses Net::Domain::TLD)
