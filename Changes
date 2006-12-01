@@ -1,5 +1,18 @@
 Revision history for Perl extension Data::Validate::Domain.
 
+0.04  Fri Dec  01 10:21:04 2006
+	- Added support for options to alter behavior of is_domain with these new
+	  options is_domain will be able to work with private domains with custom TLD's.
+		- Special Thanks to Len Reed <lreed@levanta.com> for not only suggesting
+		  the need for this but supplying several patches to help steer this
+		  solution in the right direction.  Also made several documentation 
+                  improvements. 
+		- Additional thanks to Richard Sonnen <sonnen@richardsonnen.com> for 
+		  helping flush out the details of how to utilize options in the 
+                  Data::Validate name space portably.
+	
+		
+
 0.03  Thu Nov  03 07:47:21 2005
 	- Updated to support new procedural version of Net::Domain::TLD
 		- Thanks to Ricardo Signes <rjbs@cpan.org> for letting me know about his new interface

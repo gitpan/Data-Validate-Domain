@@ -28,7 +28,7 @@ our @EXPORT = qw(
 	is_domain_label
 );
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 
@@ -39,18 +39,22 @@ Data::Validate::Domain - domain validation methods
 =head1 SYNOPSIS
 
   use Data::Validate::Domain qw(is_domain);
-  
-  if(is_domain($suspect)){
-        print "Looks like a domain name";
-  } else {
-        print "Not a domain name\n";
-  }
+ 
+  # as a function 
+  my $test = is_domain($suspect);
+  die "$test is not a domain" unless defined $test;
+
+  or
+
+  my $test = is_domain($suspect,\%options);
+  die "$test is not a domain" unless defined $test;
   
 
   # or as an object
-  my $v = Data::Validate::Domain->new();
-  
-  die "not a domain" unless ($v->is_domain('domain.com'));
+  my $v = Data::Validate::Domain->new(%options);
+
+  my $test = $v->is_domain($suspect);
+  die "$test is not a domain" unless defined $test;
 
 =head1 DESCRIPTION
 
@@ -77,6 +81,17 @@ The value to test is always the first (and often only) argument.
 
   $obj = Data::Validate::Domain->new();
 
+  my %options = (
+		domain_allow_single_label => 1,
+		domain_private_tld => {
+			'privatetld1 '   =>      1,
+			'privatetld2'    =>      1,
+		}
+  );
+
+  $obj = Data::Validate::Domain->new(%options);
+
+
 =over 4
 
 =item I<Description>
@@ -85,9 +100,26 @@ Returns a Data::Validator::Domain object.  This lets you access all the validato
 calls as methods without importing them into your namespace or using the clumsy
 Data::Validate::Domain::function_name() format.
 
-=item I<Arguments>
+=item I<Options>
 
-None
+=over 4
+
+=item	B<domain_allow_single_label>
+
+By default is_domain will fail if you ask it to verify a domain that only has a single label
+i.e. 'frii.com' is good, but 'com' would fail.  If you set this option to a true value then
+is_domain will allow single label domains through.  This is most likely to be useful in 
+combination with B<domain_private_tld>
+
+=item B<domain_private_tld>
+
+By default is_domain requires all domains to have a valid TLD (i.e. com, net, org, uk, etc),
+this is verified using the Net::Domain::TLD module.  This behavior can be extended by 
+supplying a hash reference to the B<domain_private_tld> method keyed by the additional
+TLD's you would like is_domain to accept.  An example of where this would be useful
+would be a private network with a local private domain.
+
+=back
 
 =item I<Returns>
 
@@ -102,9 +134,14 @@ Returns a Data::Validate::Domain object
 
 sub new{
         my $class = shift;
+
+        my $self = bless {}, ref($class) || $class;
+
+	%{$self} = @_;
         
-        return bless {}, $class;
+        return $self;	
 }
+
 
 
 # -------------------------------------------------------------------------------
@@ -116,6 +153,10 @@ sub new{
   is_domain($value);
   or
   $obj->is_domain($value);
+  or
+  is_domain($value,\%options);
+  or
+  $obj->is_domain($value,\%options);
 
 
 =over 4
@@ -124,6 +165,9 @@ sub new{
 
 Returns the untainted domain name if the test value appears to be a well-formed
 domain name. 
+
+Note:  See B<new> for list of options and how those alter the behavior of this 
+funciton.
 
 =item I<Arguments>
 
@@ -158,7 +202,7 @@ Does not consider "domain.com." a valid format.
    sign (-), and period (.).  Note that periods are only allowed when
    they serve to delimit components of "domain style names".
 
-    No blank or space characters are permitted as part of a
+   No blank or space characters are permitted as part of a
    name. No distinction is made between upper and lower case.  The first
    character must be an alpha character [Relaxed in RFC 1123] .  The last 
    character must not be a minus sign or period.
@@ -192,29 +236,39 @@ Does not consider "domain.com." a valid format.
 sub is_domain {
         my $self = shift if ref($_[0]); 
         my $value = shift;
+
         
         return unless defined($value);
+
+	my $opt = (defined $self)?$self:(shift);
 
 	my $length = length($value);
 	return unless ($length > 0 && $length <= 255);
       
 	my @bits; 
 	foreach my $label (split('\.', $value, -1)) {
-		my $bit = is_domain_label($label);	
+		my $bit = is_domain_label($label,$opt);	
 		return unless defined $bit;
 		push(@bits, $bit);
 	} 
-	#All domains have more then 1 label (frii.com good, com not good)
-	return unless (@bits >= 2);
-
-	#require the last value in the last section to be a letter.
-	#This lets us catch ip addresses and not consider them a domain
-	#and still will let something like this: 216.17.184.1.frii.com to 
-	#be considered a domain as it is valid.
-
-	#I don't have an RFC to back this up, but I believe it to be prudent
 	my $tld = $bits[$#bits];
-	return unless $tld =~ /^[a-zA-Z]+$/;
+
+	#domain_allow_single_label set to true disables this check
+	unless (defined $opt && $opt->{domain_allow_single_label}) {
+		#All domains have more then 1 label (frii.com good, com not good)
+		return unless (@bits >= 2);
+	}
+
+	#If the option to enable domain_private_tld is enabled
+	#and a private domain is specified, then we return if that matches
+
+	if (defined $opt && $opt->{domain_private_tld}) {
+		my $lc_tld = lc($tld);
+		if (exists $opt->{domain_private_tld}->{$lc_tld}) {
+        		return join('.', @bits);
+		}
+	}
+
 
 	#Verify domain has a valid TLD
 	return  unless tld_exists($tld);
@@ -231,6 +285,10 @@ sub is_domain {
   is_hostname($value);
   or
   $obj->is_hostname($value);
+  or
+  is_hostname($value,\%options);
+  or
+  $obj->is_hostname($value,\%options);
 
 
 =over 4
@@ -239,6 +297,9 @@ sub is_domain {
 
 Returns the untainted hostname if the test value appears to be a well-formed
 hostname. 
+
+Note:  See B<new> for list of options and how those alter the behavior of this 
+funciton.
 
 =item I<Arguments>
 
@@ -273,8 +334,9 @@ sub is_hostname {
         my $self = shift if ref($_[0]); 
         my $value = shift;
 
-        
         return unless defined($value);
+
+	my $opt = (defined $self)?$self:(shift);
 
 	my $length = length($value);
 	return unless ($length > 0 && $length <= 255);
@@ -284,7 +346,7 @@ sub is_hostname {
 	#Anything past here has multiple bits in it
 	my @bits; 
 	foreach my $label (split('\.', $value, -1)) {
-		my $bit = is_domain_label($label);	
+		my $bit = is_domain_label($label,$opt);	
 		return unless defined $bit;
 		push(@bits, $bit);
 	} 
@@ -302,6 +364,10 @@ sub is_hostname {
   is_domain_label($value);
   or
   $obj->is_domain_label($value);
+  or
+  is_domain_label($value,\%options);
+  or
+  $obj->is_domain_label($value,\%options);
 
 
 =over 4
@@ -310,6 +376,9 @@ sub is_hostname {
 
 Returns the untainted domain label if the test value appears to be a well-formed
 domain label. 
+
+Note:  See B<new> for list of options and how those alter the behavior of this 
+funciton.
 
 =item I<Arguments>
 
@@ -336,8 +405,10 @@ actually exists. It only looks to see that the format is appropriate.
 sub is_domain_label {
         my $self = shift if ref($_[0]); 
         my $value = shift;
-        
+
         return unless defined($value);
+
+	my $opt = (defined $self)?$self:(shift);
 
 	# bail if we are dealing with more then just a hostname
 	return if ($value =~ /\./);
@@ -384,9 +455,11 @@ Neil Neely <F<neil@frii.net>>.
 
 Thanks to Richard Sonnen <F<sonnen@richardsonnen.com>> for writing the Data::Validate module.
 
+Thanks to Len Reed <F<lreed@levanta.com>> for helping develop the options mechanism for Data::Validate modules.
+
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2005 Neil Neely.  
+Copyright (c) 2005-2006 Neil Neely.  
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.2 or,
