@@ -42,6 +42,13 @@ FUNCTIONS
                         }
           );
 
+          or
+
+          my %options = (
+                        domain_allow_single_label => 1,
+                        domain_private_tld        => qr /^(?:privatetld1|privatetld2)$/,
+          );
+
           $obj = Data::Validate::Domain->new(%options);
 
         *Description*
@@ -64,11 +71,24 @@ FUNCTIONS
                 By default is_domain requires all domains to have a valid
                 TLD (i.e. com, net, org, uk, etc), this is verified using
                 the Net::Domain::TLD module. This behavior can be extended
-                by supplying a hash reference to the domain_private_tld
-                method keyed by the additional TLD's you would like
-                is_domain to accept. An example of where this would be
-                useful would be a private network with a local private
-                domain.
+                in two different ways. Either a hash reference can be
+                supplied keyed by the additional TLD's, or you can supply a
+                precompiled regular expression.
+
+                NOTE: The TLD is normalized to the lower case form prior to
+                the check being done. This is done only for the TLD check,
+                and does not alter the output in any way.
+
+                        The hash reference example:     
+
+                                domain_private_tld => {
+                                        'privatetld1 '   =>      1,
+                                        'privatetld2'    =>      1,
+                                }
+
+                        The precompiled regualar expression example:
+
+                                domain_private_tld        => qr /^(?:privatetld1|privatetld2)$/,
 
         *Returns*
             Returns a Data::Validate::Domain object
@@ -211,7 +231,7 @@ SEE ALSO
         Data::Validate::IP(3)
 
 AUTHOR
-        Neil Neely <neil@frii.net>.
+        Neil Neely <neil@frii.com>.
 
 ACKNOWLEDGEMENTS
         Thanks to Richard Sonnen <sonnen@richardsonnen.com> for writing the

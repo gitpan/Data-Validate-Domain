@@ -28,7 +28,7 @@ our @EXPORT = qw(
 	is_domain_label
 );
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 
 
@@ -89,6 +89,16 @@ The value to test is always the first (and often only) argument.
 		}
   );
 
+  or
+
+  my %options = (
+		domain_allow_single_label => 1,
+		domain_private_tld 	  => qr /^(?:privatetld1|privatetld2)$/,
+  );
+
+
+
+
   $obj = Data::Validate::Domain->new(%options);
 
 
@@ -114,10 +124,25 @@ combination with B<domain_private_tld>
 =item B<domain_private_tld>
 
 By default is_domain requires all domains to have a valid TLD (i.e. com, net, org, uk, etc),
-this is verified using the Net::Domain::TLD module.  This behavior can be extended by 
-supplying a hash reference to the B<domain_private_tld> method keyed by the additional
-TLD's you would like is_domain to accept.  An example of where this would be useful
-would be a private network with a local private domain.
+this is verified using the Net::Domain::TLD module.  This behavior can be extended in two
+different ways.  Either a hash reference can be supplied keyed by the additional TLD's, or you
+can supply a precompiled regular expression.  
+
+NOTE:  The TLD is normalized to the lower case form prior to the check being done.  This is 
+done only for the TLD check, and does not alter the output in any way.
+
+	The hash reference example:	
+
+		domain_private_tld => {
+			'privatetld1 '   =>      1,
+			'privatetld2'    =>      1,
+		}
+
+	The precompiled regualar expression example:
+
+		domain_private_tld 	  => qr /^(?:privatetld1|privatetld2)$/,
+
+
 
 =back
 
@@ -262,10 +287,16 @@ sub is_domain {
 	#If the option to enable domain_private_tld is enabled
 	#and a private domain is specified, then we return if that matches
 
-	if (defined $opt && $opt->{domain_private_tld}) {
+	if (defined $opt && exists $opt->{domain_private_tld} && ref($opt->{domain_private_tld})) {
 		my $lc_tld = lc($tld);
-		if (exists $opt->{domain_private_tld}->{$lc_tld}) {
-        		return join('.', @bits);
+		if (ref($opt->{domain_private_tld}) eq 'HASH') {
+			if (exists $opt->{domain_private_tld}->{$lc_tld}) {
+				return join('.', @bits);
+			}
+		} else {
+			if ($tld =~ $opt->{domain_private_tld}) {
+				return join('.', @bits);
+			}
 		}
 	}
 
@@ -449,7 +480,7 @@ B<[RFC 1034] [RFC 1035] [RFC 2181] [RFC 1123]>
 
 =head1 AUTHOR
 
-Neil Neely <F<neil@frii.net>>.
+Neil Neely <F<neil@frii.com>>.
 
 =head1 ACKNOWLEDGEMENTS 
 

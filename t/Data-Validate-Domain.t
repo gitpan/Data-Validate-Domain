@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 44;
+use Test::More tests => 52;
 BEGIN { use_ok('Data::Validate::Domain', qw(is_hostname is_domain is_domain_label) ) };
 
 #########################
@@ -59,6 +59,10 @@ is	('com',		is_domain('com', {domain_allow_single_label => 1}),	'is_domain com w
 is	('frii',		is_domain('frii', {domain_allow_single_label => 1, domain_private_tld => {'frii' => 1}}),	'is_domain frii w/domain_private_tld  and domain_allow_single_label option');
 is	(undef,		is_domain('frii'),	'is_domain frii');
 
+#precompiled regex format
+is	('myhost.frii',		is_domain('myhost.frii', {domain_private_tld => qr/^frii$/}),	'is_domain myhost.frii w/domain_private_tld option - precompiled regex');
+is	(undef,			is_domain('myhost.frii', {domain_private_tld => qr/^intra$/}),	'is_domain myhost.frii w/domain_private_tld option - precompiled regex looking for intra');
+
 my $obj = Data::Validate::Domain->new();
 is	('co.uk',		$obj->is_domain('co.uk'),		'$obj->is_domain co.uk');
 
@@ -70,6 +74,8 @@ my $private_tld_obj = Data::Validate::Domain->new(
 					);
 is	('myhost.frii',	$private_tld_obj->is_domain('myhost.frii'),	'$private_tld_obj->is_domain myhost.frii');
 is	('myhost.frii72',	$private_tld_obj->is_domain('myhost.frii72'),	'$private_tld_obj->is_domain myhost.frii72');
+is	(undef,		$private_tld_obj->is_domain('myhost.intra'),	'$private_tld_obj->is_domain myhost.intra');
+is	(undef,		$private_tld_obj->is_domain('frii'),	'$private_tld_obj->is_domain frii');
 
 my $private_single_label_tld_obj = Data::Validate::Domain->new(
 						domain_allow_single_label => 1,
@@ -82,3 +88,12 @@ is	('frii',	$private_single_label_tld_obj->is_domain('frii'),	'$private_single_l
 is	('FRII',	$private_single_label_tld_obj->is_domain('FRII'),	'$private_single_label_tld_obj->is_domain FRII');
 is	('frii.com',	$private_single_label_tld_obj->is_domain('frii.com'),	'$private_single_label_tld_obj->is_domain frii.com');
 
+
+#precompiled regex format
+my $private_tld_obj2 = Data::Validate::Domain->new(
+						domain_private_tld => qr/^(?:frii|frii72)$/,
+					);
+is	('myhost.frii',	$private_tld_obj2->is_domain('myhost.frii'),	'$private_tld_obj2->is_domain myhost.frii');
+is	('myhost.frii72',	$private_tld_obj2->is_domain('myhost.frii72'),	'$private_tld_obj2->is_domain myhost.frii72');
+is	(undef,		$private_tld_obj2->is_domain('myhost.intra'),	'$private_tld_obj2->is_domain myhost.intra');
+is	(undef,		$private_tld_obj2->is_domain('frii'),	'$private_tld_obj2->is_domain frii');
