@@ -28,7 +28,7 @@ our @EXPORT = qw(
 	is_domain_label
 );
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 
 
@@ -117,7 +117,7 @@ Data::Validate::Domain::function_name() format.
 =item	B<domain_allow_single_label>
 
 By default is_domain will fail if you ask it to verify a domain that only has a single label
-i.e. 'frii.com' is good, but 'com' would fail.  If you set this option to a true value then
+i.e. 'neely.cx' is good, but 'com' would fail.  If you set this option to a true value then
 is_domain will allow single label domains through.  This is most likely to be useful in 
 combination with B<domain_private_tld>
 
@@ -280,7 +280,7 @@ sub is_domain {
 
 	#domain_allow_single_label set to true disables this check
 	unless (defined $opt && $opt->{domain_allow_single_label}) {
-		#All domains have more then 1 label (frii.com good, com not good)
+		#All domains have more then 1 label (neely.cx good, com not good)
 		return unless (@bits >= 2);
 	}
 
@@ -480,7 +480,7 @@ B<[RFC 1034] [RFC 1035] [RFC 2181] [RFC 1123]>
 
 =head1 AUTHOR
 
-Neil Neely <F<neil@frii.com>>.
+Neil Neely <F<neil@neely.cx>>.
 
 =head1 ACKNOWLEDGEMENTS 
 
@@ -490,7 +490,7 @@ Thanks to Len Reed <F<lreed@levanta.com>> for helping develop the options mechan
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2005-2006 Neil Neely.  
+Copyright (c) 2005-2007 Neil Neely.  
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.2 or,

@@ -61,7 +61,7 @@ FUNCTIONS
 
             domain_allow_single_label
                 By default is_domain will fail if you ask it to verify a
-                domain that only has a single label i.e. 'frii.com' is good,
+                domain that only has a single label i.e. 'neely.cx' is good,
                 but 'com' would fail. If you set this option to a true value
                 then is_domain will allow single label domains through. This
                 is most likely to be useful in combination with
@@ -231,7 +231,7 @@ SEE ALSO
         Data::Validate::IP(3)
 
 AUTHOR
-        Neil Neely <neil@frii.com>.
+        Neil Neely <neil@neely.cx>.
 
 ACKNOWLEDGEMENTS
         Thanks to Richard Sonnen <sonnen@richardsonnen.com> for writing the

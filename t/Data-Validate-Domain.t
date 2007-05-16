@@ -15,7 +15,7 @@ BEGIN { use_ok('Data::Validate::Domain', qw(is_hostname is_domain is_domain_labe
 
 is	('www',		is_domain_label('www'),		'is_domain_label www');
 is	('w-w',		is_domain_label('w-w'),		'is_domain_label w-w');
-is	('frii',	is_domain_label('frii'),	'is_domain_label frii');
+is	('neely',	is_domain_label('neely'),	'is_domain_label neely');
 is	('com',		is_domain_label('com'),		'is_domain_label com');
 is	('COM',		is_domain_label('COM'),		'is_domain_label COM');
 is	('128',		is_domain_label('128'),		'is_domain_label 128');
@@ -26,21 +26,21 @@ isnt	('1234567890123456789012345678901234567890123456789012345678901234567890',
 	is_domain_label('1234567890123456789012345678901234567890123456789012345678901234567890'),	
 	'is_domain_label 1234567890123456789012345678901234567890123456789012345678901234567890');
 
-is	('www.frii.com',	is_domain('www.frii.com'),	'is_domain www.frii.com');
-is	(undef,			is_domain('www.frii.com.'),	'is_domain www.frii.com.');
-is	(undef,			is_domain('www.frii.com...'),	'is_domain www.frii.com...');
-is	(undef,			is_domain('www.frii.lkj'),	'is_domain www.frii.lkj');
-is	('frii.com',		is_domain('frii.com'),		'is_domain frii.com');
-is	('test-frii.com',	is_domain('test-frii.com'),	'is_domain test-frii.com');
+is	('www.neely.cx',	is_domain('www.neely.cx'),	'is_domain www.neely.cx');
+is	(undef,			is_domain('www.neely.cx.'),	'is_domain www.neely.cx.');
+is	(undef,			is_domain('www.neely.cx...'),	'is_domain www.neely.cx...');
+is	(undef,			is_domain('www.neely.lkj'),	'is_domain www.neely.lkj');
+is	('neely.cx',		is_domain('neely.cx'),		'is_domain neely.cx');
+is	('test-neely.cx',	is_domain('test-neely.cx'),	'is_domain test-neely.cx');
 is	('aa.com',		is_domain('aa.com'),		'is_domain aa.com');
 is	('A-A.com',		is_domain('A-A.com'),		'is_domain A-A.com');
 is	('aa.com',		is_hostname('aa.com'),		'is_hostname aa.com');
 is	('aa.bb',		is_hostname('aa.bb'),		'is_hostname aa.bb');
 is	('aa',			is_hostname('aa'),		'is_hostname aa');
 is	(undef,			is_domain('216.17.184.1'),	'is_domain 216.17.184.1');
-is	(undef,			is_domain('test_frii.com'),	'is_domain test_frii.com');
-is	(undef,			is_domain('.frii.com'),		'is_domain .frii.com');
-is	(undef,			is_domain('-www.frii.com'),	'is_domain -www.frii.com');
+is	(undef,			is_domain('test_neely.cx'),	'is_domain test_neely.cx');
+is	(undef,			is_domain('.neely.cx'),		'is_domain .neely.cx');
+is	(undef,			is_domain('-www.neely.cx'),	'is_domain -www.neely.cx');
 is	(undef,			is_domain('a'),			'is_domain a');
 is	(undef,			is_domain('.'),			'is_domain .');
 is	(undef,			is_domain('com.'),		'is_domain com.');
@@ -53,47 +53,47 @@ is	(undef,
 	is_domain('123456789012345678901234567890123456789012345678901234567890.1234567890123456789012345678901234567890.12345678901234567890123456789012345678901234567890.12345678901234567890123456789012345678901234567890.12345678901234567890123456789012345678901234567890.123456789012345678901234567890.com'),	
 	'is_domain 123456789012345678901234567890123456789012345678901234567890.1234567890123456789012345678901234567890.12345678901234567890123456789012345678901234567890.12345678901234567890123456789012345678901234567890.12345678901234567890123456789012345678901234567890.123456789012345678901234567890.com');
 #Some additional tests for options
-is	('myhost.frii',		is_domain('myhost.frii', {domain_private_tld => {'frii' => 1}}),	'is_domain myhost.frii w/domain_private_tld option');
-is	(undef,		is_domain('myhost.frii'),	'is_domain myhost.frii');
+is	('myhost.neely',		is_domain('myhost.neely', {domain_private_tld => {'neely' => 1}}),	'is_domain myhost.neely w/domain_private_tld option');
+is	(undef,		is_domain('myhost.neely'),	'is_domain myhost.neely');
 is	('com',		is_domain('com', {domain_allow_single_label => 1}),	'is_domain com w/domain_allow_single_label option');
-is	('frii',		is_domain('frii', {domain_allow_single_label => 1, domain_private_tld => {'frii' => 1}}),	'is_domain frii w/domain_private_tld  and domain_allow_single_label option');
-is	(undef,		is_domain('frii'),	'is_domain frii');
+is	('neely',		is_domain('neely', {domain_allow_single_label => 1, domain_private_tld => {'neely' => 1}}),	'is_domain neely w/domain_private_tld  and domain_allow_single_label option');
+is	(undef,		is_domain('neely'),	'is_domain neely');
 
 #precompiled regex format
-is	('myhost.frii',		is_domain('myhost.frii', {domain_private_tld => qr/^frii$/}),	'is_domain myhost.frii w/domain_private_tld option - precompiled regex');
-is	(undef,			is_domain('myhost.frii', {domain_private_tld => qr/^intra$/}),	'is_domain myhost.frii w/domain_private_tld option - precompiled regex looking for intra');
+is	('myhost.neely',		is_domain('myhost.neely', {domain_private_tld => qr/^neely$/}),	'is_domain myhost.neely w/domain_private_tld option - precompiled regex');
+is	(undef,			is_domain('myhost.neely', {domain_private_tld => qr/^intra$/}),	'is_domain myhost.neely w/domain_private_tld option - precompiled regex looking for intra');
 
 my $obj = Data::Validate::Domain->new();
 is	('co.uk',		$obj->is_domain('co.uk'),		'$obj->is_domain co.uk');
 
 my $private_tld_obj = Data::Validate::Domain->new(
 						domain_private_tld => {
-									frii	=>	1,
-									frii72	=>	1,
+									neely	=>	1,
+									neely72	=>	1,
 									},
 					);
-is	('myhost.frii',	$private_tld_obj->is_domain('myhost.frii'),	'$private_tld_obj->is_domain myhost.frii');
-is	('myhost.frii72',	$private_tld_obj->is_domain('myhost.frii72'),	'$private_tld_obj->is_domain myhost.frii72');
+is	('myhost.neely',	$private_tld_obj->is_domain('myhost.neely'),	'$private_tld_obj->is_domain myhost.neely');
+is	('myhost.neely72',	$private_tld_obj->is_domain('myhost.neely72'),	'$private_tld_obj->is_domain myhost.neely72');
 is	(undef,		$private_tld_obj->is_domain('myhost.intra'),	'$private_tld_obj->is_domain myhost.intra');
-is	(undef,		$private_tld_obj->is_domain('frii'),	'$private_tld_obj->is_domain frii');
+is	(undef,		$private_tld_obj->is_domain('neely'),	'$private_tld_obj->is_domain neely');
 
 my $private_single_label_tld_obj = Data::Validate::Domain->new(
 						domain_allow_single_label => 1,
 						domain_private_tld => {
-									frii	=>	1,
+									neely	=>	1,
 									},
 					);
 
-is	('frii',	$private_single_label_tld_obj->is_domain('frii'),	'$private_single_label_tld_obj->is_domain frii');
-is	('FRII',	$private_single_label_tld_obj->is_domain('FRII'),	'$private_single_label_tld_obj->is_domain FRII');
-is	('frii.com',	$private_single_label_tld_obj->is_domain('frii.com'),	'$private_single_label_tld_obj->is_domain frii.com');
+is	('neely',	$private_single_label_tld_obj->is_domain('neely'),	'$private_single_label_tld_obj->is_domain neely');
+is	('NEELY',	$private_single_label_tld_obj->is_domain('NEELY'),	'$private_single_label_tld_obj->is_domain NEELY');
+is	('neely.cx',	$private_single_label_tld_obj->is_domain('neely.cx'),	'$private_single_label_tld_obj->is_domain neely.cx');
 
 
 #precompiled regex format
 my $private_tld_obj2 = Data::Validate::Domain->new(
-						domain_private_tld => qr/^(?:frii|frii72)$/,
+						domain_private_tld => qr/^(?:neely|neely72)$/,
 					);
-is	('myhost.frii',	$private_tld_obj2->is_domain('myhost.frii'),	'$private_tld_obj2->is_domain myhost.frii');
-is	('myhost.frii72',	$private_tld_obj2->is_domain('myhost.frii72'),	'$private_tld_obj2->is_domain myhost.frii72');
+is	('myhost.neely',	$private_tld_obj2->is_domain('myhost.neely'),	'$private_tld_obj2->is_domain myhost.neely');
+is	('myhost.neely72',	$private_tld_obj2->is_domain('myhost.neely72'),	'$private_tld_obj2->is_domain myhost.neely72');
 is	(undef,		$private_tld_obj2->is_domain('myhost.intra'),	'$private_tld_obj2->is_domain myhost.intra');
-is	(undef,		$private_tld_obj2->is_domain('frii'),	'$private_tld_obj2->is_domain frii');
+is	(undef,		$private_tld_obj2->is_domain('neely'),	'$private_tld_obj2->is_domain neely');
