@@ -28,7 +28,7 @@ our @EXPORT = qw(
 	is_domain_label
 );
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 
 
@@ -70,12 +70,6 @@ The value to test is always the first (and often only) argument.
 =head1 FUNCTIONS
 
 =over 4
-
-=cut
-
-# -------------------------------------------------------------------------------
-
-=pod
 
 =item B<new> - constructor for OO usage
 
@@ -462,6 +456,11 @@ __END__
 
 
 # -------------------------------------------------------------------------------
+
+=pod
+
+
+=back
 
 =back
 
