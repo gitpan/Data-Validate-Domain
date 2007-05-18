@@ -1,5 +1,11 @@
 Revision history for Perl extension Data::Validate::Domain.
 
+0.08  Wed May  17 2007
+	- Ugh, forgot to add new tests to MANIFEST
+
+0.07  Wed May  17 2007
+        - Added POD testing, and minor cleanup related to that
+
 0.06  Wed May  16 2007
 	- Updated contact information to be neil@neely.cx, this is a purely cosmetic change
 
