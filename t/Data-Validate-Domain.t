@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 52;
+use Test::More tests => 57;
 BEGIN { use_ok('Data::Validate::Domain', qw(is_hostname is_domain is_domain_label) ) };
 
 #########################
@@ -58,6 +58,8 @@ is	(undef,		is_domain('myhost.neely'),	'is_domain myhost.neely');
 is	('com',		is_domain('com', {domain_allow_single_label => 1}),	'is_domain com w/domain_allow_single_label option');
 is	('neely',		is_domain('neely', {domain_allow_single_label => 1, domain_private_tld => {'neely' => 1}}),	'is_domain neely w/domain_private_tld  and domain_allow_single_label option');
 is	(undef,		is_domain('neely'),	'is_domain neely');
+isnt	('_spf',	is_hostname('_spf'),	'is_hostname("_spf"');
+is	('_spf',	is_hostname('_spf', {domain_allow_underscore => 1}),	'is_hostname("_spf", {domain_allow_underscore = 1}');
 
 #precompiled regex format
 is	('myhost.neely',		is_domain('myhost.neely', {domain_private_tld => qr/^neely$/}),	'is_domain myhost.neely w/domain_private_tld option - precompiled regex');
@@ -97,3 +99,10 @@ is	('myhost.neely',	$private_tld_obj2->is_domain('myhost.neely'),	'$private_tld_
 is	('myhost.neely72',	$private_tld_obj2->is_domain('myhost.neely72'),	'$private_tld_obj2->is_domain myhost.neely72');
 is	(undef,		$private_tld_obj2->is_domain('myhost.intra'),	'$private_tld_obj2->is_domain myhost.intra');
 is	(undef,		$private_tld_obj2->is_domain('neely'),	'$private_tld_obj2->is_domain neely');
+
+my $allow_underscore_obj = Data::Validate::Domain->new(
+						domain_allow_underscore => 1,
+					);
+is	('_spf.neely.cx',	$allow_underscore_obj->is_domain('_spf.neely.cx'),	'$allow_underscore_obj->is_domain _spf.neely.cx');
+is	('_sip._tcp.neely.cx',	$allow_underscore_obj->is_domain('_sip._tcp.neely.cx'),	'$allow_underscore_obj->is_domain _sip._tcp.neely.cx');
+is	('_spf',	$allow_underscore_obj->is_hostname('_spf'),	'$allow_underscore_obj->is_domain _spf');

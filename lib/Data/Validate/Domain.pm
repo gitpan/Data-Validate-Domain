@@ -28,7 +28,7 @@ our @EXPORT = qw(
 	is_domain_label
 );
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 
 
@@ -74,6 +74,11 @@ The value to test is always the first (and often only) argument.
 =item B<new> - constructor for OO usage
 
   $obj = Data::Validate::Domain->new();
+  my %options = (
+		domain_allow_underscore => 1,
+  );
+
+  or
 
   my %options = (
 		domain_allow_single_label => 1,
@@ -107,6 +112,12 @@ Data::Validate::Domain::function_name() format.
 =item I<Options>
 
 =over 4
+
+=item	B<domain_allow_underscore>
+
+According to RFC underscores are forbidden in "hostnames" but not "domainnames".
+By default is_domain,is_domain_label,  and is_hostname will fail if you include underscores, setting 
+this to a true value with authorize the use of underscores in all functions. 
 
 =item	B<domain_allow_single_label>
 
@@ -440,9 +451,17 @@ sub is_domain_label {
 	my $length = length($value);
 	my $hostname;
 	if ($length == 1) {
-          ($hostname) = $value =~ /^([\dA-Za-z])$/;
+		if (defined $opt && $opt->{domain_allow_underscore}) {
+			($hostname) = $value =~ /^([\dA-Za-z\_])$/;
+		} else {
+			($hostname) = $value =~ /^([\dA-Za-z])$/;
+		} 
 	} elsif ($length > 1 && $length <= 63) {
-          ($hostname) = $value =~ /^([\dA-Za-z][\dA-Za-z\-]*[\dA-Za-z])$/;
+		if (defined $opt && $opt->{domain_allow_underscore}) {
+			($hostname) = $value =~ /^([\dA-Za-z\_][\dA-Za-z\-\_]*[\dA-Za-z])$/;
+		} else {
+			($hostname) = $value =~ /^([\dA-Za-z][\dA-Za-z\-]*[\dA-Za-z])$/;
+		} 
 	} else {
 		return;
 	}

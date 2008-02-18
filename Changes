@@ -1,5 +1,10 @@
 Revision history for Perl extension Data::Validate::Domain.
 
+0.09  Mon Feb  18 2008
+	- Added new option of domain_allow_underscore to allow this module 
+	  to be used for validating domainnames like _spf.neely.cx if the option is set
+	  Default behavior was not changed
+
 0.08  Wed May  17 2007
 	- Ugh, forgot to add new tests to MANIFEST
 
