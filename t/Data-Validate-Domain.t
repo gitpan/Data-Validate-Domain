@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 57;
+use Test::More tests => 59;
 BEGIN { use_ok('Data::Validate::Domain', qw(is_hostname is_domain is_domain_label) ) };
 
 #########################
@@ -60,6 +60,9 @@ is	('neely',		is_domain('neely', {domain_allow_single_label => 1, domain_private
 is	(undef,		is_domain('neely'),	'is_domain neely');
 isnt	('_spf',	is_hostname('_spf'),	'is_hostname("_spf"');
 is	('_spf',	is_hostname('_spf', {domain_allow_underscore => 1}),	'is_hostname("_spf", {domain_allow_underscore = 1}');
+
+is	(undef,		is_domain("example\n.com"),	'is_domain( "example\n.com")');
+is	(undef,		is_domain_label("example\n"),	'is_domain_label( "example\n")');
 
 #precompiled regex format
 is	('myhost.neely',		is_domain('myhost.neely', {domain_private_tld => qr/^neely$/}),	'is_domain myhost.neely w/domain_private_tld option - precompiled regex');

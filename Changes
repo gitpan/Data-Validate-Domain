@@ -1,5 +1,9 @@
 Revision history for Perl extension Data::Validate::Domain.
 
+0.10  Mon Dec  29 2010
+	- Fixed bug 41033, no longer allows \n in domain_labels
+		Thanks to marek.miska@netart.pl for reporting the bug
+
 0.09  Mon Feb  18 2008
 	- Added new option of domain_allow_underscore to allow this module 
 	  to be used for validating domainnames like _spf.neely.cx if the option is set

@@ -28,7 +28,7 @@ our @EXPORT = qw(
 	is_domain_label
 );
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 
 
@@ -443,6 +443,9 @@ sub is_domain_label {
         my $value = shift;
 
         return unless defined($value);
+
+	#Fix Bug: 41033
+	return if ($value =~ /\n/);
 
 	my $opt = (defined $self)?$self:(shift);
 
